@@ -4,7 +4,7 @@ var file = new(static.Server)();
 var app = http.createServer(function (req, res) {
   file.serve(req, res);
 }).listen(process.env.PORT || 5000);
-
+console.log("Running!");
 var clientID= 0;
 var clients = [];
 
