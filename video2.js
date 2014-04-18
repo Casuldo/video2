@@ -79,12 +79,14 @@ function getUserData() {
 		video = document.getElementById('local');
 		if(video.src !=='undefined' && window.webkitURL) {
 			  isChrome=true;
+			  setFunctions();
 			  videoSource = window.webkitURL.createObjectURL(mediaStream);
 			  video.src = videoSource;
 			  peer = new webkitRTCPeerConnection(pc_config);
 			  socket.emit('join','jep');
 		  }
 		else if(video.mozSrcObject !=='undefined') {
+				setFunctions();
 				video.mozSrcObject = mediaStream;
 				peer = new RTCPeerConnection(pc_config,optional);
 				socket.emit('join','jep');
