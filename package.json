@@ -1,5 +1,5 @@
 {
-  "name": "webrtc",
+  "name": "video2",
   "version": "0.0.0",
   "description": "videoRTC",
   "main": "server.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Casuldo/webrtc"
+    "url": "https://github.com/Casuldo/video2.git"
   },
   "author": "Casuldo",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Casuldo/webrtc/issues"
+    "url": "https://github.com/Casuldo/video2/issues"
   },
-  "homepage": "https://github.com/Casuldo/webrtc",
+  "homepage": "https://github.com/Casuldo/video2",
   "dependencies": {
     "node-static": "^0.7.3",
     "socket.io": "^0.9.16"
