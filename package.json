@@ -1,0 +1,24 @@
+{
+  "name": "webrtc",
+  "version": "0.0.0",
+  "description": "videoRTC",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Casuldo/webrtc"
+  },
+  "author": "Casuldo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Casuldo/webrtc/issues"
+  },
+  "homepage": "https://github.com/Casuldo/webrtc",
+  "dependencies": {
+    "node-static": "^0.7.3",
+    "socket.io": "^0.9.16"
+  }
+}
