@@ -6,6 +6,10 @@ var videoSource;
 var peer;
 var localStream;
 var offerList=[];
+var clID=-1;
+var signalingCount=0;
+var chatChannel;
+var nickName="Pösilö";
 
 socket.on('getID',function(id){
 	myID=id;
@@ -14,6 +18,10 @@ socket.on('getID',function(id){
 
 socket.on('newClient',function(id){
 	console.log("New client! "+id);
+	clID=id;
+	var dataChannel = peer.createDataChannel("chat");
+	chatChannel = dataChannel;
+	dataChannelHandler(dataChannel);	
 	sendOffer(id);
 });	
 
@@ -27,7 +35,7 @@ var pc_config = {    iceServers: [
 }
  //var pc_config = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]}; 
 /*var pc_config = webrtcDetectedBrowser === 'firefox' ?
-  {'iceServers':[{'url':'stun:23.21.150.121'}]} : // number IP
+  {'iceServers':[{'url':'stun:23.21.150.121'}]} utop: // number IP
   {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};*/
   
  var DtlsSrtpKeyAgreement = {
@@ -35,9 +43,13 @@ var pc_config = {    iceServers: [
 }; 
   
 var optional = {
-   optional: [DtlsSrtpKeyAgreement]
+   optional: [{RtpDataChannels: true,
+			DtlsSrtpKeyAgreement: true}]
 };
 var sdpConstraints = {'mandatory': {
+  'OfferToReceiveAudio':true,
+  'OfferToReceiveVideo':true }};
+ var sdpConstraints = {'mandatory': {
   'OfferToReceiveAudio':true,
   'OfferToReceiveVideo':true }};
 /*var sdpConstraints = {
@@ -83,6 +95,7 @@ function getUserData() {
 			  videoSource = window.webkitURL.createObjectURL(mediaStream);
 			  video.src = videoSource;
 			  peer = new webkitRTCPeerConnection(pc_config);
+
 			  socket.emit('join','jep');
 		  }
 		else if(video.mozSrcObject !=='undefined') {
@@ -91,10 +104,18 @@ function getUserData() {
 				peer = new RTCPeerConnection(pc_config,optional);
 				socket.emit('join','jep');
 			}
+		
 		if (offerList.length>0){
 			sendOffer(offerList[0]);
 			offerList = [];
 		}
+		
+		peer.ondatachannel = function (event) {
+			console.log("data channel detected");
+            var dataChannel = event.channel;
+			chatChannel = dataChannel;
+            dataChannelHandler(dataChannel);
+        };
 		sendIceCandidateData();
 			
         peer.onicecandidate = function(event) {
@@ -107,9 +128,8 @@ function getUserData() {
                 });
             }
         };
-		
 		video.play();
-		video.autoplay = true;
+		video.autoplay = false;
         peer.addStream(localStream);
         console.log(peer);
 		peer.onaddstream = function(remoteData) {
@@ -124,7 +144,7 @@ function getUserData() {
 					remote.mozSrcObject = remoteData.stream;
 				}
 		remote.play();
-		remote.autoplay = true;
+		remote.autoplay = false;
 		sendIceCandidateData();
 		};
     }
@@ -195,6 +215,14 @@ socket.on('getAnswer', function(data) {
         var remoteDescription = new RTCSessionDescription(data.answerSDP);
         peer.setRemoteDescription(remoteDescription,success,failure);
     }
+	if(signalingCount==0) {
+		signalingCount++;
+		//setTimeout(sendOffer(clID),1000);
+		sendOffer(clID);
+	}
+	else signalingCount=0;
+	//setTimeout(function(){alert("Hello")},3000);
+	//setTimeout(sendDataOffer(clID),3000);
 });
 
 function success() {
@@ -232,10 +260,53 @@ function sendIceCandidateData() {
         };
 }
 
+function sendMessage() {
+	if(typeof chatChannel === 'undefined') return;
+	
+	var txtarea= document.getElementById('chatChannel').value;
+	var html = document.getElementById('chatBox').innerHTML;
+	document.getElementById('chatBox').innerHTML = html + "<p><b>"+nickName+": </b>"+txtarea+"</p>";
+	chatChannel.send(nickName+"!.!/"+txtarea);
+	console.log("Sending: " + txtarea);
+	document.getElementById('chatChannel').value="";
+}
+
+function dataChannelHandler(dataChannel) {
+	console.log("-- dataChannelHandler -- ");
+	console.log(dataChannel);
+	console.log(dataChannel.readyState);
+	console.log(dataChannel.label);
+	
+	/*var dataChannelOptions = {
+	  ordered: false, // do not guarantee order
+	  maxRetransmitTime: 3000, // in milliseconds
+	};*/
+
+
+	dataChannel.onerror = function (error) {
+	  console.log("Data Channel Error:", error);
+	};
+
+	dataChannel.onmessage = function (event) {
+	  console.log("Got Data Channel Message:", event.data);
+	var html = document.getElementById('chatBox').innerHTML;
+	var str = event.data.split("!.!/");
+	document.getElementById('chatBox').innerHTML = html + "<p><b>"+str[0]+": </b>"+str[1]+"</p>";
+	};
+
+	dataChannel.onopen = function () {
+	  console.log("Hello world!");
+	};
+
+	dataChannel.onclose = function () {
+	  console.log("The Data Channel is Closed");
+	};
+}
+
 function setFunctions() {
 	if(!isChrome) {
 		RTCSessionDescription = mozRTCSessionDescription;
 		RTCIceCandidate = mozRTCIceCandidate;
 		RTCPeerConnection = mozRTCPeerConnection;
 	}
-}	
+}

@@ -5,14 +5,36 @@
             <title>Getting started with WebRTC</title>
             <link href="" rel="stylesheet" type="text/css" />
 			<script src='/socket.io/socket.io.js'></script>
+			<link rel='stylesheet' href='video.css' />
+			
+			<script> 
+			
+			function saveNick() {
+				nickName = document.getElementById('nick').value;
+			}
+			
+			</script>
+			
         </head>
         <body>
-     
-     
+		Your name?: <input id="nick" type="text" name="name" value="Pösilö"><br>
+		<button onclick='saveNick()'>Save</button>
+		
             <script src="video2.js"></script>
-			
-			<video id="local"></video>
-			<video id="remote"></video>
-			<button onclick='getUserData()' id="start-peer-connection">Start Peer Connection</button>
+			<script src="dataChannel.js"></script>
+			<div id="content">
+				<div id="videos">
+					<video id="local"></video>
+					<video id="remote"></video>
+					<button onclick='getUserData()' id="start-peer-connection">Start Peer Connection</button>
+				</div>
+			<div id="chat"> 
+			<h3>Chat</h3>
+			<div id="chatBox"> 
+			</div>
+			<textarea id="chatChannel"></textarea>
+			<button id="sendButton" onclick='sendMessage()'>Send</button>
+			</div>
+			</div>
         </body>
     </html>

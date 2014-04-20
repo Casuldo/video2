@@ -1,0 +1,25 @@
+div#chat{
+	position:relative;
+	width:70%;
+	margin-left:15%;
+	bottom:0%;
+}
+#chatChannel {
+	width:50%;
+	height:50px;
+}
+div#chatBox{
+	padding:10px;
+	border:solid black 4px;
+	border-radius:10px;
+	height:200px;
+	overflow:scroll;
+}
+
+p{
+	line-height:5px;
+}
+
+video {
+	width:400px;
+}

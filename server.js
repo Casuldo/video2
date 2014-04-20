@@ -23,6 +23,16 @@ io.sockets.on('connection', function (socket){
 		socket.broadcast.emit('getOffer', data);
 	});
 	
+	socket.on('dataOffer', function (data) {
+		console.log('Got dataOffer: ', data);
+		socket.broadcast.emit('getDataOffer', data);
+	});
+	
+	socket.on('dataAnswer', function (data) {
+		console.log('Got dataAnswer: ', data);
+		socket.broadcast.emit('getDataAnswer', data);
+	});
+	
 	socket.on('answer', function (data) {
 		console.log('Got answer data from... : ', data);
 		socket.broadcast.emit('getAnswer', data);
